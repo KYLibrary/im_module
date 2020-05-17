@@ -1,10 +1,42 @@
+source 'https://github.com/KYLibrary/KYPod.git'
+source 'https://github.com/CocoaPods/Specs.git'
+
 use_frameworks!
 
-platform :ios, '8.0'
+platform :ios, '9.0'
 
 target 'im_module_Example' do
-  pod 'im_module', :path => '../'
+  pod 'im_module', :path => '../', :subspecs => [
+    'Helper',
+    'Chat',
+    'Conversation',
+    'Account',
+    'Home',
+    'Call',
+    'Chatroom',
+    'Contact',
+    'Group',
+    'Notification',
+    'Settings',
+  ]
 
+  pod 'Masonry'
+  pod 'MJRefresh'
+  pod 'MBProgressHUD', '~> 1.0.0'
+  pod 'SDWebImage', '~> 4.0'
+  pod 'SDWebImage/GIF'
+  pod 'FLAnimatedImage', '~> 1.0'
+  pod 'Hyphenate'
+#  pod 'KYVoiceConvert', :path => '/Users/wangyinghui/Documents/KYLib/KYVoiceConvert'
+  pod 'KYVoiceConvert', '0.1.0'
+#  pod 'KYPhotoBrowser', :path => '/Users/wangyinghui/Documents/KYLib/KYPhotoBrowser'
+  pod 'KYPhotoBrowser', '0.1.1'
+#  pod 'KYUtil', :path => '/Users/wangyinghui/Documents/KYLib/KYUtil', :subspecs => [
+  pod 'KYUtil', '~>0.1.0', :subspecs => [
+    'KYCategories',
+    'KYPathUtil',
+  ]
+  
   target 'im_module_Tests' do
     inherit! :search_paths
 

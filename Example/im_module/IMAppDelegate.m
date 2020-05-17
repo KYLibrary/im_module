@@ -6,41 +6,210 @@
 //  Copyright (c) 2020 kyleboy. All rights reserved.
 //
 
+#import <UserNotifications/UserNotifications.h>
 #import "IMAppDelegate.h"
+
+#import "EMDemoHelper.h"
+#import "DemoCallManager.h"
+#import "DemoConfManager.h"
+
+#import "EMGlobalVariables.h"
+#import "EMDemoOptions.h"
+
+#import "EMHomeViewController.h"
+#import "EMLoginViewController.h"
+
+@interface IMAppDelegate () <UNUserNotificationCenterDelegate>
+
+@end
+
 
 @implementation IMAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
-    return YES;
-}
+    _connectionState = EMConnectionConnected;
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    [self _initDemo];
+    [self _initHyphenate];
 
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    [self.window makeKeyAndVisible];
+    
+    return YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    [[EMClient sharedClient] applicationDidEnterBackground:application];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    [[EMClient sharedClient] applicationWillEnterForeground:application];
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application
+// 将得到的deviceToken传给SDK
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[EMClient sharedClient] bindDeviceToken:deviceToken];
+    });
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application
+// 注册deviceToken失败，此处失败，与环信SDK无关，一般是您的环境配置或者证书配置有误
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"注册device token失败" message:error.description delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+    [alert show];
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+//    if (gMainController) {
+//        [gMainController jumpToChatList];
+//    }
+    
+    [[EMClient sharedClient] application:application didReceiveRemoteNotification:userInfo];
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+//    if (gMainController) {
+//        [gMainController didReceiveLocalNotification:notification];
+//    }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
+{
+    NSDictionary *userInfo = notification.request.content.userInfo;
+    [[EMClient sharedClient] application:[UIApplication sharedApplication] didReceiveRemoteNotification:userInfo];
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)())completionHandler
+{
+//    if (gMainController) {
+//        [gMainController didReceiveUserNotification:response.notification];
+//    }
+    completionHandler();
+}
+
+#pragma mark - EMPushManagerDelegateDevice
+
+// 打印收到的apns信息
+-(void)didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    NSError *parseError = nil;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:userInfo options:NSJSONWritingPrettyPrinted error:&parseError];
+    NSString *str = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"推送内容" message:str delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil];
+    [alert show];
+    
+}
+
+#pragma mark - Hyphenate
+
+- (void)_initHyphenate
+{
+    EMDemoOptions *demoOptions = [EMDemoOptions sharedOptions];
+    if (demoOptions.isAutoLogin){
+        gIsInitializedSDK = YES;
+        [[EMClient sharedClient] initializeSDKWithOptions:[demoOptions toOptions]];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:ACCOUNT_LOGIN_CHANGED object:@(YES)];
+    } else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ACCOUNT_LOGIN_CHANGED object:@(NO)];
+    }
+}
+
+#pragma mark - Demo
+
+- (void)_initDemo
+{
+    
+    //注册登录状态监听
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginStateChange:) name:ACCOUNT_LOGIN_CHANGED object:nil];
+    
+    //注册推送
+    [self _registerRemoteNotification];
+}
+
+//注册远程通知
+- (void)_registerRemoteNotification
+{
+    UIApplication *application = [UIApplication sharedApplication];
+    application.applicationIconBadgeNumber = 0;
+    
+    if (NSClassFromString(@"UNUserNotificationCenter")) {
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+        
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:UNAuthorizationOptionBadge | UNAuthorizationOptionSound | UNAuthorizationOptionAlert completionHandler:^(BOOL granted, NSError *error) {
+            if (granted) {
+#if !TARGET_IPHONE_SIMULATOR
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [application registerForRemoteNotifications];
+                });
+#endif
+            }
+        }];
+        return;
+    }
+    
+    if([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationType notificationTypes = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+    
+#if !TARGET_IPHONE_SIMULATOR
+    if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
+        [application registerForRemoteNotifications];
+    } else {
+        UIRemoteNotificationType notificationTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert;
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:notificationTypes];
+    }
+#endif
+}
+
+- (void)loginStateChange:(NSNotification *)aNotif
+{
+    UINavigationController *navigationController = nil;
+    
+    BOOL loginSuccess = [aNotif.object boolValue];
+    if (loginSuccess) {//登录成功加载主窗口控制器
+        navigationController = (UINavigationController *)self.window.rootViewController;
+        if (!navigationController || (navigationController && ![navigationController.viewControllers[0] isKindOfClass:[EMHomeViewController class]])) {
+            EMHomeViewController *homeController = [[EMHomeViewController alloc] init];
+            navigationController = [[UINavigationController alloc] initWithRootViewController:homeController];
+        }
+        
+        [EMDemoHelper shareHelper];
+        [EMNotificationHelper shared];
+        [DemoCallManager sharedManager];
+        [DemoConfManager sharedManager];
+    } else {//登录失败加载登录页面控制器
+        EMLoginViewController *controller = [[EMLoginViewController alloc] init];
+        navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    }
+    
+//    navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    [navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"navbar_white"] forBarMetrics:UIBarMetricsDefault];
+    [navigationController.navigationBar.layer setMasksToBounds:YES];
+    navigationController.view.backgroundColor = [UIColor whiteColor];
+    self.window.rootViewController = navigationController;
+    
+    [[UINavigationBar appearance] setTitleTextAttributes:
+     [NSDictionary dictionaryWithObjectsAndKeys:[UIColor blackColor], NSForegroundColorAttributeName, [UIFont systemFontOfSize:18], NSFontAttributeName, nil]];
+    [[UITableViewHeaderFooterView appearance] setTintColor:kColor_LightGray];
+    
+//    UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+//    if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+//        statusBar.backgroundColor = [UIColor whiteColor];
+//    }
 }
 
 @end
+

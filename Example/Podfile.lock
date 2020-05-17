@@ -1,0 +1,130 @@
+PODS:
+  - Expecta (1.0.6)
+  - "Expecta+Snapshots (3.1.1)":
+    - Expecta (~> 1.0)
+    - FBSnapshotTestCase/Core (~> 2.0)
+    - Specta (~> 1.0)
+  - FBSnapshotTestCase (2.1.4):
+    - FBSnapshotTestCase/SwiftSupport (= 2.1.4)
+  - FBSnapshotTestCase/Core (2.1.4)
+  - FBSnapshotTestCase/SwiftSupport (2.1.4):
+    - FBSnapshotTestCase/Core
+  - FLAnimatedImage (1.0.12)
+  - Hyphenate (3.6.5)
+  - im_module/Account (0.1.0):
+    - im_module/Helper
+  - im_module/Call (0.1.0):
+    - im_module/Helper
+  - im_module/Chat (0.1.0):
+    - FLAnimatedImage (~> 1.0)
+    - im_module/Helper
+    - KYPhotoBrowser (~> 0.1.1)
+    - KYVoiceConvert (~> 0.1.0)
+  - im_module/Chatroom (0.1.0):
+    - im_module/Helper
+  - im_module/Contact (0.1.0):
+    - im_module/Helper
+  - im_module/Conversation (0.1.0):
+    - im_module/Helper
+  - im_module/Group (0.1.0):
+    - im_module/Helper
+  - im_module/Helper (0.1.0):
+    - FLAnimatedImage
+    - Hyphenate (= 3.6.5)
+    - KYUtil/KYCategories
+    - Masonry
+    - MBProgressHUD
+    - MJRefresh
+    - SDWebImage/GIF
+  - im_module/Home (0.1.0):
+    - im_module/Helper
+  - im_module/Notification (0.1.0):
+    - im_module/Helper
+  - im_module/Settings (0.1.0):
+    - im_module/Helper
+  - KYPhotoBrowser (0.1.1):
+    - MBProgressHUD (~> 1.0.0)
+    - SDWebImage (~> 4.0)
+  - KYUtil/KYCategories (0.1.0):
+    - KYUtil/KYPathUtil
+  - KYUtil/KYPathUtil (0.1.0)
+  - KYVoiceConvert (0.1.0)
+  - Masonry (1.1.0)
+  - MBProgressHUD (1.0.0)
+  - MJRefresh (3.3.1)
+  - SDWebImage (4.4.8):
+    - SDWebImage/Core (= 4.4.8)
+  - SDWebImage/Core (4.4.8)
+  - SDWebImage/GIF (4.4.8):
+    - FLAnimatedImage (~> 1.0)
+    - SDWebImage/Core
+  - Specta (1.0.7)
+
+DEPENDENCIES:
+  - Expecta
+  - "Expecta+Snapshots"
+  - FBSnapshotTestCase
+  - FLAnimatedImage (~> 1.0)
+  - Hyphenate
+  - im_module/Account (from `../`)
+  - im_module/Call (from `../`)
+  - im_module/Chat (from `../`)
+  - im_module/Chatroom (from `../`)
+  - im_module/Contact (from `../`)
+  - im_module/Conversation (from `../`)
+  - im_module/Group (from `../`)
+  - im_module/Helper (from `../`)
+  - im_module/Home (from `../`)
+  - im_module/Notification (from `../`)
+  - im_module/Settings (from `../`)
+  - KYPhotoBrowser (= 0.1.1)
+  - KYUtil/KYCategories (~> 0.1.0)
+  - KYUtil/KYPathUtil (~> 0.1.0)
+  - KYVoiceConvert (= 0.1.0)
+  - Masonry
+  - MBProgressHUD (~> 1.0.0)
+  - MJRefresh
+  - SDWebImage (~> 4.0)
+  - SDWebImage/GIF
+  - Specta
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Expecta
+    - "Expecta+Snapshots"
+    - FBSnapshotTestCase
+    - FLAnimatedImage
+    - Hyphenate
+    - Masonry
+    - MBProgressHUD
+    - MJRefresh
+    - SDWebImage
+    - Specta
+  https://github.com/KYLibrary/KYPod.git:
+    - KYPhotoBrowser
+    - KYUtil
+    - KYVoiceConvert
+
+EXTERNAL SOURCES:
+  im_module:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Expecta: 3b6bd90a64b9a1dcb0b70aa0e10a7f8f631667d5
+  "Expecta+Snapshots": dcff217eef506dabd6dfdc7864ea2da321fafbb8
+  FBSnapshotTestCase: 094f9f314decbabe373b87cc339bea235a63e07a
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  Hyphenate: de934686fa85bc436175a8c1b087bda40a5164d0
+  im_module: 7d81ee3049951611f1fd94f37c15da1abd15163b
+  KYPhotoBrowser: 8585d8d3d347d26ba313cee4486520d3a63f6428
+  KYUtil: 8bb7c0e9536bd54dcd4877375bd22331e56cb7aa
+  KYVoiceConvert: 154c5cc5c55669fe87f3ea83e4ad01ce6cb5bab4
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
+  MJRefresh: eeda70fbf0ad277f3178cef1cd0c3532591d6237
+  SDWebImage: 783af2c3fa36291a250030c4752ee370a9a51d13
+  Specta: 3e1bd89c3517421982dc4d1c992503e48bd5fe66
+
+PODFILE CHECKSUM: 4548f85e11fa2d58d26a136210825ffb5efb98ad
+
+COCOAPODS: 1.6.1
