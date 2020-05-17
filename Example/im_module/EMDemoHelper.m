@@ -55,6 +55,10 @@ static EMDemoHelper *helper = nil;
 
 - (void)_initHelper
 {
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    
     [[EMClient sharedClient] addDelegate:self delegateQueue:nil];
     [[EMClient sharedClient] addMultiDevicesDelegate:self delegateQueue:nil];
     [[EMClient sharedClient].groupManager addDelegate:self delegateQueue:nil];
@@ -497,5 +501,13 @@ static EMDemoHelper *helper = nil;
     [navController pushViewController:controller animated:YES];
 }
 
+#pragma mark - AppLifeCycleNotification
+- (void)applicationDidEnterBackground:(NSNotification *)aNotif {
+    [[EMClient sharedClient] applicationDidEnterBackground:aNotif.object];
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)aNotif {
+    [[EMClient sharedClient] applicationWillEnterForeground:aNotif.object];
+}
 
 @end

@@ -17,12 +17,9 @@
 #define kTabbarItemTag_Contact 1
 #define kTabbarItemTag_Settings 2
 
-@interface EMHomeViewController ()<UITabBarDelegate, EMChatManagerDelegate, EMNotificationsDelegate>
+@interface EMHomeViewController ()<EMChatManagerDelegate, EMNotificationsDelegate>
 
 @property (nonatomic) BOOL isViewAppear;
-
-@property (nonatomic, strong) UITabBar *tabBar;
-@property (strong, nonatomic) NSArray *viewControllers;
 
 @property (nonatomic, strong) EMConversationsViewController *conversationsController;
 @property (nonatomic, strong) EMContactsViewController *contactsController;
@@ -48,7 +45,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.navigationBarHidden = YES;
+    [self.navigationController setNavigationBarHidden:NO];
     self.isViewAppear = YES;
     [self _loadTabBarItemsBadge];
 }
@@ -85,28 +82,17 @@
     
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.tabBar = [[UITabBar alloc] init];
-    self.tabBar.delegate = self;
-    self.tabBar.translucent = NO;
-    self.tabBar.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:self.tabBar];
-    [self.tabBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.bottom.equalTo(self.view.mas_bottom).offset(-EMVIEWBOTTOMMARGIN);
-        make.left.equalTo(self.view.mas_left);
-        make.right.equalTo(self.view.mas_right);
-        make.height.mas_equalTo(50);
-    }];
+    UIBarButtonItem *settingItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabbar_settings_gray" bundleName:@"Home.bundle" inBundleForClass:[self class]]
+                                                                    style:UIBarButtonItemStyleDone
+                                                                   target:self
+                                                                   action:@selector(jumpSettingsPage)];
+    UIBarButtonItem *contactItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabbar_contacts_gray" bundleName:@"Home.bundle" inBundleForClass:[self class]]
+                                                                       style:UIBarButtonItemStyleDone
+                                                                      target:self
+                                                                      action:@selector(jumpContactPage)];
     
-    UIView *lineView = [[UIView alloc] init];
-    lineView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
-    [self.tabBar addSubview:lineView];
-    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.tabBar.mas_top);
-        make.left.equalTo(self.tabBar.mas_left);
-        make.right.equalTo(self.tabBar.mas_right);
-        make.height.equalTo(@1);
-    }];
-    
+    self.navigationItem.rightBarButtonItems = @[settingItem, contactItem];
+
     [self _setupChildController];
 }
 
@@ -129,57 +115,10 @@
     self.conversationsController.tabBarItem = consItem;
     [self addChildViewController:self.conversationsController];
     
-    self.contactsController = [[EMContactsViewController alloc] init];
-    UITabBarItem *contItem = [self _setupTabBarItemWithTitle:@"联系人" imgName:@"tabbar_contacts_gray" selectedImgName:@"tabbar_contacts_blue" tag:kTabbarItemTag_Contact];
-    self.contactsController.tabBarItem = contItem;
-    [self addChildViewController:self.contactsController];
-    
-    //UITabBarItem *readReceiptItem = [self _setupTabBarItemWithTitle:@"发现" imgName:@"icon-tab发现unselected" selectedImgName:@"icon-tab发现" tag:kTabbarItemTag_Settings];
-    
-    self.settingsController = [[EMSettingsViewController alloc] init];
-    UITabBarItem *settingsItem = [self _setupTabBarItemWithTitle:@"设置" imgName:@"tabbar_settings_gray" selectedImgName:@"tabbar_settings_blue" tag:kTabbarItemTag_Settings];
-    self.settingsController.tabBarItem = settingsItem;
-    [self addChildViewController:self.settingsController];
-    
-    self.viewControllers = @[self.conversationsController, self.contactsController, self.settingsController];
-    
-    [self.tabBar setItems:@[consItem, contItem, settingsItem]];
-    
-    self.tabBar.selectedItem = consItem;
-    [self tabBar:self.tabBar didSelectItem:consItem];
-}
-
-#pragma mark - UITabBarDelegate
-
-- (void)tabBar:(UITabBar *)tabBar didSelectItem:(UITabBarItem *)item
-{
-    NSInteger tag = item.tag;
-    UIView *tmpView = nil;
-    if (tag == kTabbarItemTag_Conversation) {
-        tmpView = self.conversationsController.view;
-    } else if (tag == kTabbarItemTag_Contact) {
-        tmpView = self.contactsController.view;
-    } else if (tag == kTabbarItemTag_Settings) {
-        tmpView = self.settingsController.view;
-    }
-    
-    if (self.addView == tmpView) {
-        return;
-    } else {
-        [self.addView removeFromSuperview];
-        self.addView = nil;
-    }
-    
-    self.addView = tmpView;
-    if (self.addView) {
-        [self.view addSubview:self.addView];
-        [self.addView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.top.equalTo(self.view);
-            make.left.equalTo(self.view);
-            make.right.equalTo(self.view);
-            make.bottom.equalTo(self.tabBar.mas_top);
-        }];
-    }
+    [self.view addSubview:self.conversationsController.view];
+    [self.addView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
 }
 
 #pragma mark - EMChatManagerDelegate
@@ -227,6 +166,21 @@
     [self _loadConversationTabBarItemBadge];
     
     [self didNotificationsUnreadCountUpdate:[EMNotificationHelper shared].unreadCount];
+}
+
+#pragma mark - Jump
+- (void)jumpSettingsPage {
+    EMSettingsViewController *settingsController = [[EMSettingsViewController alloc] init];
+    settingsController.title = @"聊天设置";
+    settingsController.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:settingsController animated:YES];
+}
+
+- (void)jumpContactPage {
+    EMContactsViewController *contactsController = [[EMContactsViewController alloc] init];
+    contactsController.title = @"朋友";
+    contactsController.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:contactsController animated:YES];
 }
 
 @end

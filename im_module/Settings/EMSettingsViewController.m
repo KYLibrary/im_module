@@ -38,7 +38,7 @@
 {
     [super viewWillAppear:animated];
     
-    self.navigationController.navigationBarHidden = YES;
+//    self.navigationController.navigationBarHidden = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -52,18 +52,8 @@
 
 - (void)_setupSubviews
 {
+    [self addPopBackLeftItemWithTarget:self action:@selector(backAction)];
     self.view.backgroundColor = [UIColor whiteColor];
-    
-    UILabel *titleLabel = [[UILabel alloc] init];
-    titleLabel.text = @"应用设置";
-    titleLabel.textColor = [UIColor blackColor];
-    titleLabel.font = [UIFont systemFontOfSize:28];
-    [self.view addSubview:titleLabel];
-    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(self.view).offset(EMVIEWTOPMARGIN + 15);
-        make.top.equalTo(self.view).offset(20);
-        make.height.equalTo(@60);
-    }];
     
     self.userCell = [[EMAvatarNameCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"EMAvatarNameCell"];
     self.userCell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -81,7 +71,7 @@
     self.tableView.tableFooterView = [[UIView alloc] init];
     [self.view addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(titleLabel.mas_bottom);
+        make.top.equalTo(self.view);
         make.left.equalTo(self.view);
         make.right.equalTo(self.view);
         make.bottom.equalTo(self.view);
@@ -217,4 +207,8 @@
     }
 }
 
+#pragma mark - Action
+- (void)backAction {
+    [self.navigationController popViewControllerAnimated:YES];
+}
 @end

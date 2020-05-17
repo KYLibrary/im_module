@@ -8,7 +8,7 @@
 
 @import UIKit;
 
-@interface IMAppDelegate : UIResponder <UIApplicationDelegate, EMChatManagerDelegate>
+@interface IMAppDelegate : UIResponder <UIApplicationDelegate>
 {
     EMConnectionState _connectionState;
 }
