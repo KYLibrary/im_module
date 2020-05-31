@@ -13,6 +13,8 @@
 #import "EMSettingsViewController.h"
 #import "EMRemindManager.h"
 
+#import "BBBadgeBarButtonItem.h"
+
 #define kTabbarItemTag_Conversation 0
 #define kTabbarItemTag_Contact 1
 #define kTabbarItemTag_Settings 2
@@ -25,10 +27,21 @@
 @property (nonatomic, strong) EMContactsViewController *contactsController;
 @property (nonatomic, strong) EMSettingsViewController *settingsController;
 @property (nonatomic, strong) UIView *addView;
+@property (nonatomic, strong) BBBadgeBarButtonItem *contactItem;
 
 @end
 
 @implementation EMHomeViewController
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        //环信注册登录状态监听
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(em_loginStateChange:) name:ACCOUNT_LOGIN_CHANGED object:nil];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -68,6 +81,7 @@
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[EMClient sharedClient].chatManager removeDelegate:self];
     [[EMNotificationHelper shared] removeDelegate:self];
 }
@@ -86,11 +100,13 @@
                                                                     style:UIBarButtonItemStyleDone
                                                                    target:self
                                                                    action:@selector(jumpSettingsPage)];
-    UIBarButtonItem *contactItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"tabbar_contacts_gray" bundleName:@"Home.bundle" inBundleForClass:[self class]]
-                                                                       style:UIBarButtonItemStyleDone
-                                                                      target:self
-                                                                      action:@selector(jumpContactPage)];
+    UIButton *contactBut = [[UIButton alloc] init];
+    [contactBut setImage:[UIImage imageNamed:@"tabbar_contacts_gray" bundleName:@"Home.bundle" inBundleForClass:[self class]] forState:UIControlStateNormal];
+    [contactBut addTarget:self action:@selector(jumpContactPage) forControlEvents:UIControlEventTouchUpInside];
+    BBBadgeBarButtonItem *contactItem = [[BBBadgeBarButtonItem alloc] initWithCustomUIButton:contactBut];
+    contactItem.badgeFont = [UIFont systemFontOfSize:11];
     
+    self.contactItem = contactItem;
     self.navigationItem.rightBarButtonItems = @[settingItem, contactItem];
 
     [self _setupChildController];
@@ -125,9 +141,7 @@
 
 - (void)messagesDidReceive:(NSArray *)aMessages
 {
-    if (self.isViewAppear) {
-        [self _loadConversationTabBarItemBadge];
-    }
+    [self _loadConversationTabBarItemBadge];
 }
 
 - (void)conversationListDidUpdate:(NSArray *)aConversationList
@@ -140,9 +154,9 @@
 - (void)didNotificationsUnreadCountUpdate:(NSInteger)aUnreadCount
 {
     if (aUnreadCount > 0) {
-        self.contactsController.tabBarItem.badgeValue = @(aUnreadCount).stringValue;
+        self.contactItem.badgeValue = @(aUnreadCount).stringValue;
     } else {
-        self.contactsController.tabBarItem.badgeValue = nil;
+        self.contactItem.badgeValue = nil;
     }
 }
 
@@ -157,7 +171,7 @@
     }
     
     NSString *unreadCountStr = unreadCount > 0 ? @(unreadCount).stringValue : nil;
-    self.conversationsController.tabBarItem.badgeValue = unreadCountStr;
+    self.navigationController.tabBarItem.badgeValue = unreadCountStr;
     [EMRemindManager updateApplicationIconBadgeNumber:unreadCount];
 }
 
@@ -167,6 +181,16 @@
     
     [self didNotificationsUnreadCountUpdate:[EMNotificationHelper shared].unreadCount];
 }
+
+- (void)em_loginStateChange:(NSNotification *)aNotif
+{
+    BOOL loginSuccess = [aNotif.object boolValue];
+    if (loginSuccess) {//登录成功加载主窗口控制器
+       [self view];
+    }
+    [self _loadConversationTabBarItemBadge];
+}
+
 
 #pragma mark - Jump
 - (void)jumpSettingsPage {

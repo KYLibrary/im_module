@@ -53,8 +53,14 @@
     UIView *bgView = [[UIView alloc] init];
     bgView.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:bgView];
+    CGFloat top = 20;
+    CGRect statusRect = [[UIApplication sharedApplication] statusBarFrame];
+    top += statusRect.size.height;
+    if (self.navigationController) {
+        top += self.navigationController.navigationBar.bounds.size.height;
+    }
     [bgView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.view).offset(20);
+        make.top.equalTo(self.view).offset(top);
         make.left.equalTo(self.view);
         make.right.equalTo(self.view);
         make.height.equalTo(@60);

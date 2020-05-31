@@ -23,6 +23,8 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		66C94ABB243326D400EEDEE9 /* EMDemoHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C94AB9243326D400EEDEE9 /* EMDemoHelper.m */; };
+		66E5FE3B2478BE5D0078A001 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66E5FE392478BE5D0078A001 /* Localizable.strings */; };
+		66E5FE3C2478BE5D0078A001 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66E5FE3A2478BE5D0078A001 /* InfoPlist.strings */; };
 		66F8F31F24710FC90094EA00 /* IMAppDelegate+IM.m in Sources */ = {isa = PBXBuildFile; fileRef = 66F8F31E24710FC90094EA00 /* IMAppDelegate+IM.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
@@ -64,6 +66,8 @@
 		659AD18C9054AF90F168A1B4 /* Pods-im_module_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-im_module_Example.debug.xcconfig"; path = "Target Support Files/Pods-im_module_Example/Pods-im_module_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		66C94AB9243326D400EEDEE9 /* EMDemoHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EMDemoHelper.m; sourceTree = "<group>"; };
 		66C94ABA243326D400EEDEE9 /* EMDemoHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EMDemoHelper.h; sourceTree = "<group>"; };
+		66E5FE392478BE5D0078A001 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
+		66E5FE3A2478BE5D0078A001 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = InfoPlist.strings; sourceTree = "<group>"; };
 		66F8F31D24710FC90094EA00 /* IMAppDelegate+IM.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "IMAppDelegate+IM.h"; sourceTree = "<group>"; };
 		66F8F31E24710FC90094EA00 /* IMAppDelegate+IM.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "IMAppDelegate+IM.m"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -169,6 +173,8 @@
 		6003F594195388D20070C39A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				66E5FE3A2478BE5D0078A001 /* InfoPlist.strings */,
+				66E5FE392478BE5D0078A001 /* Localizable.strings */,
 				6003F595195388D20070C39A /* im_module-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
@@ -291,6 +297,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E5FE3B2478BE5D0078A001 /* Localizable.strings in Resources */,
+				66E5FE3C2478BE5D0078A001 /* InfoPlist.strings in Resources */,
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,

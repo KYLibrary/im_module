@@ -139,6 +139,7 @@ Pod::Spec.new do |s|
   
   s.subspec "Home" do |ss|
       ss.dependency 'im_module/Helper'
+      ss.dependency 'BBBadgeBarButtonItem' # 在顶部创建带有徽章的BarButtonItem
       ss.source_files         = "im_module/Home/**/*.{h,m}"
       ss.resource_bundles = {
           'Home' => [
